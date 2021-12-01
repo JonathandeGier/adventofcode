@@ -1,4 +1,4 @@
-file = open("input1.txt", "r")
+file = open("2021/input/day1.txt", "r")
 
 array = []
 for line in file:
