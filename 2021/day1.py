@@ -1,8 +1,12 @@
-file = open("2021/input/day1.txt", "r")
+from getInput import get_input
+
+input = get_input(1)
 
 array = []
-for line in file:
-    array.append(int(line.strip()))
+for line in input.split("\n"):
+    stripped = line.strip()
+    if len(stripped) != 0:
+        array.append(int(line.strip()))
 
 
 increased = 0
