@@ -1,6 +1,6 @@
 from getInput import get_input
 
-input = get_input(1)
+input = get_input(2021, 1)
 
 array = []
 for line in input.split("\n"):
