@@ -19,15 +19,9 @@ for value in array:
         increased += 1
     last = value
 
-print("")
-print("")
-
 print("Puzzle 1:")
-print("Increased: ")
-print(increased)
-
-print("Decreased: ")
-print(decreased)
+print("Increased: " + str(increased))
+print("Decreased: " + str(decreased))
 print("")
 
 condensed = []
@@ -54,14 +48,6 @@ for value in condensed:
     last = value
 
 print("Puzzle 2:")   
-print("Increased: ")
-print(increased)
-
-print("Same: ")
-print(same)
-
-print("Decreased: ")
-print(decreased)
-
-print("")
-print("")
+print("Increased: " + str(increased))
+print("Same: " + str(same))
+print("Decreased: " + str(decreased))
