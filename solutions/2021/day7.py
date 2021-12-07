@@ -16,13 +16,12 @@ def align(positions, target):
 def align2(positions, target):
     fuel = 0
     for value in positions:
-        for i in range(1, abs(value - target) + 1):
-            fuel += i
+        fuel += calculate_fuel(abs(value - target))
     return fuel
 
 
 def calculate_fuel(distance):
-    pass
+    return int(((distance * distance) + distance) / 2)
 
 
 def main():
@@ -38,13 +37,9 @@ def main():
     print("")
 
     print("Puzzle 2:")
-    print("calcultating..", end="", flush=True)
     fuel_cost = {}
     for i in range(min(positions), max(positions) + 1):
-        if i % 10 == 0:
-            print(".", end="", flush=True)
         fuel_cost[align2(positions, i)] = i
-    print("")
 
     min_fuel = min(fuel_cost.keys())
     print("Lowest fuel cost: " + str(min_fuel) + " to position " + str(fuel_cost[min_fuel]))
