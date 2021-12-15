@@ -1,9 +1,6 @@
-from collections import deque
+import heapq
 from getInput import get_input
 
-class Node:
-    def __init__(self, pos):
-        self.pos = pos
 
 def get_grid():
     input = get_input(2021, 15).splitlines()
@@ -15,177 +12,80 @@ def get_grid():
         grid.append(row)
     return grid
 
-def brute_force(width, height):
-    start = ((0,0), set((0,0)))
-    routes = []
-    queue = deque(start)
-    while queue:
-        pos, route = queue.popleft()
-        if pos == (width - 1, height - 1):
-            routes.append(route)
-        
-        directions = []
-        if pos[0] != 0:
-            directions.append((pos[0] - 1, pos[1]))
-        if pos[1]!= 0:
-            directions.append((pos[0], pos[1] - 1))
-        if pos[0] != width - 1:
-            directions.append((pos[0] + 1, pos[1]))
-        if pos[1] != height - 1:
-            directions.append((pos[0], pos[1] + 1))
 
-        for new_pos in directions:
-            pass
+def path(pos, calculated_distances, grid):
+    # if the distance to the position is already calculated, return the calculated distance
+    if pos in calculated_distances:
+        return calculated_distances[pos]
 
-def next(pos, grid: list, route: list, checked):
-    width = len(grid[0])
-    height = len(grid)
-    print(route)
+    # if the position is outside the grid, return a absurdly high number
+    if pos[0] < 0 or pos[0] >= len(grid) or pos[1] < 0 or pos[1] >= len(grid[0]):
+        return 1e9
 
-    if pos == (width - 1, height - 1):
-        print("Exit found", route, len(route))
-        return
+    # if the current position is in the bottom-right corner (final position), return just the distance (risk) at that position
+    if pos[0] == len(grid) - 1 and pos[1] == len(grid[0]) - 1:
+        return grid[pos[0]][pos[1]]
 
-    all_directions = {}
-    if pos[0] != 0 and (pos[0] - 1, pos[1]) != route[-1]:
-        all_directions[(pos[0] - 1, pos[1])] = grid[pos[0] - 1][pos[1]]
-    if pos[1] != 0 and (pos[0], pos[1] - 1) != route[-1]:
-        all_directions[(pos[0], pos[1] - 1)] = grid[pos[0]][pos[1] - 1]
-    if pos[0] != height - 1 and (pos[0] + 1, pos[1]) != route[-1]:
-        all_directions[(pos[0] + 1, pos[1])] = grid[pos[0] + 1][pos[1]]
-    if pos[1] != width - 1 and (pos[0], pos[1] + 1) != route[-1]:
-        all_directions[(pos[0], pos[1] + 1)] = grid[pos[0]][pos[1] + 1]
-
-    # if pos[0] != 0:
-    #     all_directions[(pos[0] - 1, pos[1])] = grid[pos[0] - 1][pos[1]]
-    # if pos[1] != 0:
-    #     all_directions[(pos[0], pos[1] - 1)] = grid[pos[0]][pos[1] - 1]
-    # if pos[0] != height - 1:
-    #     all_directions[(pos[0] + 1, pos[1])] = grid[pos[0] + 1][pos[1]]
-    # if pos[1] != width - 1:
-    #     all_directions[(pos[0], pos[1] + 1)] = grid[pos[0]][pos[1] + 1]
-
-    if len(all_directions) == 0:
-        return
-
-    min_risk = min(all_directions.values())
+    # calculate the lowest distance to the final point
+    ans = grid[pos[0]][pos[1]] + min(path((pos[0] + 1, pos[1]), calculated_distances, grid), path((pos[0], pos[1] + 1), calculated_distances, grid))
+    calculated_distances[pos] = ans
+    return ans
     
-    directions = []
-    for dir in all_directions:
-        if all_directions[dir] == min_risk:
-            directions.append(dir)
-    print("directions", directions)
-
-    temp_route = route.copy()
-    for new_pos in directions:
-        if new_pos in route:
-            route.pop()
-            break
-        else:
-            route.append(new_pos)
-            result = next(new_pos, grid, temp_route, checked)
-            print("result", result)
-        # else:
-        #     pass
-            # print("here", route)
-    else:
-        pass
-        print("heres", route)
-        return False
-
-    return True
-    
-def a_star():
-    start = Node((0,0))
-    start.f = 0
-    openList = [start]
-    closedList = []
-
-    while openList:
-        pass
-
 
 def main():
+    # Load the grid
     grid = get_grid()
-    
-    width = len(grid[0])
-    height = len(grid)
 
-    a_star()
-    exit()
-
-    # next((0,0), grid, [(0,0)], [])
-    # start = ((0,0), [])
-    Q = deque([[(0,0)]])
-    while Q:
-        route = Q.popleft()
-        pos = route[-1]
-        print(route, len(Q))
-
-        if pos == (width - 1, height - 1):
-            print("Exit found", route, len(route))
-            exit()
-            return
-        
-        all_directions = {}
-        if pos[0] != 0:
-            if len(route) >= 2:
-                if (pos[0] - 1, pos[1]) != route[-2]:
-                    all_directions[(pos[0] - 1, pos[1])] = grid[pos[0] - 1][pos[1]]
-            else:
-                all_directions[(pos[0] - 1, pos[1])] = grid[pos[0] - 1][pos[1]]
-        if pos[1] != 0:
-            if len(route) >= 2:
-                if (pos[0], pos[1] - 1) != route[-2]:
-                    all_directions[(pos[0], pos[1] - 1)] = grid[pos[0]][pos[1] - 1]
-            else:
-                all_directions[(pos[0], pos[1] - 1)] = grid[pos[0]][pos[1] - 1]
-        if pos[0] != height - 1:
-            if len(route) >= 2:
-                if (pos[0] + 1, pos[1]) != route[-2]:
-                    all_directions[(pos[0] + 1, pos[1])] = grid[pos[0] + 1][pos[1]]
-            else:
-                all_directions[(pos[0] + 1, pos[1])] = grid[pos[0] + 1][pos[1]]
-        if pos[1] != width - 1:
-            if len(route) >= 2:
-                if (pos[0], pos[1] + 1) != route[-2]:
-                    all_directions[(pos[0], pos[1] + 1)] = grid[pos[0]][pos[1] + 1]
-            else:
-                all_directions[(pos[0], pos[1] + 1)] = grid[pos[0]][pos[1] + 1]
-
-        min_risk = min(all_directions.values())
-    
-        directions = []
-        for dir in all_directions:
-            # if all_directions[dir] == min_risk:
-            directions.append(dir)
-
-        # print("directions", all_directions)
-
-        for new_pos in directions:
-            if new_pos not in route:
-                new_route = route.copy()
-                new_route.append(new_pos)
-                # print("new route", new_route)
-                Q.append(new_route)
-            else:
-                pass
-                # neighbour already on route, check if route to current is less risk
-                # better_route = []
-                # for i in range(len(route)):
-                #     if route[i] != new_pos:
-                #         better_route.append(route[i])
-                #     else:
-                #         better_route.append(pos)
-                #         break
-                # Q.append(better_route)
-
+    # solve part 1
+    result = path((0,0), {}, grid)
+    risk = result - grid[0][0]
 
     print("Puzzle 1:")
-
+    print("Lowest risk path: " + str(risk))
     print("")
 
+    # expand the grid
+    new_grid = []
+    for i in range(5):
+        for row in grid:
+            new_row = []        
+            for j in range(5):
+                for cell in row:
+                    val = cell + i + j
+                    if val >= 10:
+                        val -= 9
+                    new_row.append(val)
+            new_grid.append(new_row)
+
+    # solve part 2
+    calculated_distances = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
+    queue = [(0,0,0)]
+    while queue:
+        (distance, row, col) = heapq.heappop(queue)
+
+        if row < 0 or row >= len(new_grid) or col < 0 or col >= len(new_grid[0]):
+            continue
+
+        cost = distance + new_grid[row][col]
+
+        if calculated_distances[row][col] == None or cost < calculated_distances[row][col]:
+            calculated_distances[row][col] = cost
+        else: 
+            continue
+
+        if row == len(new_grid) - 1 and col == len(new_grid[0]) - 1:
+            break
+
+        for pos in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+            new_row = row + pos[0]
+            new_col = col + pos[1]
+
+            heapq.heappush(queue, (calculated_distances[row][col], new_row, new_col))
+        
+    risk = calculated_distances[len(new_grid) - 1][len(new_grid[0]) - 1] - new_grid[0][0]
+    
     print("Puzzle 2:")
+    print("Lowest risk path: " + str(risk))
 
 
 if __name__ == "__main__":
