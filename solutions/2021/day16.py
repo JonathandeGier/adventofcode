@@ -53,12 +53,33 @@ class Packet:
             else:
                 return 0
 
-    def __str__(self):
-        substr = ""
-        if self.sub_packets:
-            for pack in self.sub_packets:
-                substr += "\n\tPacket version " + str(pack.version) + " type " + str(pack.type) + " Value: " + str(pack.value)
-        return "Packet version " + str(self.version) + " type " + str(self.type) + substr
+    def string_type(self):
+        if self.type == 0:
+            return "Sum of subpackets" + "  (" + str(self.to_value()) + ")"
+        elif self.type == 1:
+            return "Product of subpackets" + "  (" + str(self.to_value()) + ")"
+        elif self.type == 2:
+            return "Minimum of subpackets" + "  (" + str(self.to_value()) + ")"
+        elif self.type == 3:
+            return "Maximum of subpackets" + "  (" + str(self.to_value()) + ")"
+        elif self.type == 4:
+            return "Value" + "  (" + str(self.to_value()) + ")"
+        elif self.type == 5:
+            return "First less than second" + "  (" + str(self.to_value()) + ")"
+        elif self.type == 6:
+            return "First more than second" + "  (" + str(self.to_value()) + ")"
+        else: 
+            return "First equal to" + "  (" + str(self.to_value()) + ")"
+
+    def __str__(self, depth = 0):
+        indent = ""
+        for _ in range(depth):
+            indent += "\t"
+        self_string = indent + self.string_type() + "\n"
+
+        for pack in self.sub_packets:
+            self_string += pack.__str__(depth+1)
+        return self_string
 
 def get_data():
     return get_input(2021, 16).strip()
@@ -132,7 +153,10 @@ def main():
 
     binary = to_bin_string(data)
 
-    packet = parse(binary)[0]
+    packets = parse(binary)
+
+    assert len(packets) == 1
+    packet = packets[0]
 
     print("Puzzle 1:")
     print("Sum of all version numbers: " + str(packet.deep_version_sum()))
@@ -141,6 +165,19 @@ def main():
 
     print("Puzzle 2:")
     print("Resulting value: " + str(packet.to_value()))
+
+
+def visualize():
+    data = get_data()
+
+    binary = to_bin_string(data)
+
+    packets = parse(binary)
+
+    assert len(packets) == 1
+    packet = packets[0]
+
+    print(packet)
 
 
 if __name__ == "__main__":
