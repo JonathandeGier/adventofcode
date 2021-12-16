@@ -5,9 +5,60 @@ class Packet:
     def __init__(self, version, type):
         self.version = version
         self.type = type
+        self.sub_packets = []
 
     def is_literal(self):
         return self.type == 4
+
+    def deep_version_sum(self):
+        sub_sum = 0
+        for sub_pack in self.sub_packets:
+            sub_sum += sub_pack.deep_version_sum()
+        return self.version + sub_sum
+
+    def to_value(self):
+        if self.type == 0:
+            # sum
+            return sum([pack.to_value() for pack in self.sub_packets])
+        elif self.type == 1:
+            # product
+            product = 1
+            for pack in self.sub_packets:
+                product *= pack.to_value()
+            return product
+        elif self.type == 2:
+            # min
+            return min([pack.to_value() for pack in self.sub_packets])
+        elif self.type == 3:
+            # max
+            return max([pack.to_value() for pack in self.sub_packets])
+        elif self.type == 4:
+            return self.value
+        elif self.type == 5:
+            # greater than
+            if self.sub_packets[0].to_value() > self.sub_packets[1].to_value():
+                return 1
+            else:
+                return 0
+        elif self.type == 6:
+            # less than
+            if self.sub_packets[0].to_value() < self.sub_packets[1].to_value():
+                return 1
+            else:
+                return 0
+        else: # type == 7
+            # equal to
+            if self.sub_packets[0].to_value() == self.sub_packets[1].to_value():
+                return 1
+            else:
+                return 0
+
+    def __str__(self):
+        substr = ""
+        if self.sub_packets:
+            for pack in self.sub_packets:
+                substr += "\n\tPacket version " + str(pack.version) + " type " + str(pack.type) + " Value: " + str(pack.value)
+        return "Packet version " + str(self.version) + " type " + str(self.type) + substr
 
 def get_data():
     return get_input(2021, 16).strip()
@@ -18,7 +69,6 @@ def to_bin_string(string):
 
 def parse(string, max = -1):
     packets = []
-    print(len(packets))
 
     while max != 0:
         max -= 1
@@ -30,30 +80,25 @@ def parse(string, max = -1):
 
         if packet.is_literal():
             val = ""
-            curr_group = 0
+            curr_group = -1
 
             while True:
-                group = string[6 + (curr_group * 5):11 + (curr_group * 5)]
-                val += group[1:-1]
                 curr_group += 1
+                group = string[6 + (curr_group * 5):11 + (curr_group * 5)]
+                val += group[1:]
 
-                if group[0] == 0:
+                if group[0] == "0":
                     break
-            data_length = 11 + (curr_group * 5)
-            packet_length = data_length
-            while packet_length % 4 != 0:
-                packet_length += 1
 
             packet.value = int(val, 2)
-            packet.raw_length = packet_length
-            packet.raw = string[0:packet_length]
+            packet.raw_length = 11 + (curr_group * 5)
 
         else:
             packet.length_type_id = int(string[6:7])
 
             if packet.length_type_id == 0:
                 # length = total length in bits
-                packet.type_length = int(string[7:22]) # next 15 bits
+                packet.type_length = int(string[7:22], 2) # next 15 bits
                 raw_sub_packets = string[22:22 + packet.type_length]
                 packet.sub_packets = parse(raw_sub_packets)
 
@@ -61,15 +106,22 @@ def parse(string, max = -1):
                 packet.raw = string[0:packet.raw_length]
             else:
                 # length = number of sub_packets
-                packet.type_length = int(string[7:18]) # next 11 bits
+                packet.type_length = int(string[7:18], 2) # next 11 bits
                 packet.sub_packets = parse(string[18:], packet.type_length)
 
-            print("operational packet")
-            exit()
-            # operational packet
+                length = 0
+                for pack in packet.sub_packets:
+                    length += pack.raw_length
+
+                packet.raw_length = 18 + length
+
 
         packets.append(packet)
         string = string[packet.raw_length:]
+
+        if string == "" or int(string, 2) == 0:
+            break
+
     return packets
 
     
@@ -77,23 +129,18 @@ def parse(string, max = -1):
 
 def main():
     data = get_data()
-    data = data[1:-1] # remove beginning and end 0 bits
-
-    # Example
-    # data = "8A004A801A8002F478"
-    data = "38006F45291200" # 1 op packet, 2 sub literal packets
 
     binary = to_bin_string(data)
 
-    parse(binary)
-    
-    print(to_bin_string(data))
+    packet = parse(binary)[0]
 
     print("Puzzle 1:")
+    print("Sum of all version numbers: " + str(packet.deep_version_sum()))
 
     print("")
 
     print("Puzzle 2:")
+    print("Resulting value: " + str(packet.to_value()))
 
 
 if __name__ == "__main__":
