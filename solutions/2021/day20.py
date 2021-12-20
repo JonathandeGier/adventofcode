@@ -78,7 +78,7 @@ def main():
     print(str(pixels_lit) + " pixels lit")
     print("")
 
-    for i in range(24):
+    for i in range(24): # 2 per iteration plus 2 from part one makes 50 in total
         image = add_padding(image, ".")
         image = enhance(image, mapping, "0")
 
