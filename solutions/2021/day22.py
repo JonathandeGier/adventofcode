@@ -1,5 +1,6 @@
 from getInput import get_input
 import numpy as np
+from cubes import Workspace
 
 def get_data():
     input = get_input(2021, 22).splitlines()
@@ -93,6 +94,9 @@ def main():
 
     print("Puzzle 2:")
     print("...")
+
+    workspace = Workspace("slicer.ini")
+    browser = workspace.browser()
 
 
 if __name__ == "__main__":
