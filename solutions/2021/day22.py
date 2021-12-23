@@ -88,21 +88,11 @@ def main():
     
 
     print("Puzzle 1:")
-    print(np.sum(reactor))
+    print(int(np.sum(reactor)))
     print("")
-
-    sum = 0
-    applied_steps = []
-    for step in steps:
-        sum += change_in_sum(step, applied_steps)
-        applied_steps.append(step)
-
-    print(sum)
-    print("")
-
 
     print("Puzzle 2:")
-    # 516884163097971 < x
+    print("...")
 
 
 if __name__ == "__main__":
