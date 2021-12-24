@@ -360,15 +360,13 @@ def is_solved(state):
     return True
 
 
-def main():
-    state = get_state_1()
-    
+def solve(state):
     all_costs = []
     state_costs = {}
-    start = (state, [], 0)
+    start = (state, 0)
     queue = deque([start])
     while queue:
-        state, moves, cost = queue.popleft()
+        state, cost = queue.popleft()
 
         if is_solved(state):
             all_costs.append(cost)
@@ -378,42 +376,23 @@ def main():
 
             for move in possible_moves(state):
                 new_state = change_state(state, move)
-                new_moves = moves.copy()
-                new_moves.append(move)
                 new_cost = cost + move[2]
 
-                queue.append((new_state, new_moves, new_cost))
+                queue.append((new_state, new_cost))
+    return min(all_costs)
 
+
+def main():
+    state = get_state_1()
 
     print("Puzzle 1:")
-    print(min(all_costs))
+    print(solve(state))
     print("")
 
     state = get_state_2()
 
-    all_costs = []
-    state_costs = {}
-    start = (state, [], 0)
-    queue = deque([start])
-    while queue:
-        state, moves, cost = queue.popleft()
-
-        if is_solved(state):
-            all_costs.append(cost)
-
-        if state not in state_costs or state_costs[state] > cost:
-            state_costs[state] = cost
-
-            for move in possible_moves(state):
-                new_state = change_state(state, move)
-                new_moves = moves.copy()
-                new_moves.append(move)
-                new_cost = cost + move[2]
-
-                queue.append((new_state, new_moves, new_cost))
-
     print("Puzzle 2:")
-    print(min(all_costs))
+    print(solve(state))
 
 
 if __name__ == "__main__":
