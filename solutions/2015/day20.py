@@ -1,42 +1,73 @@
-# from getInput import get_input
+from typing import Counter
+from getInput import get_input
 
-# def get_house_number():
-#     return int(get_input(2015, 20).strip())
+import math
+
+
+def get_presents():
+    return int(get_input(2015, 20).strip())
+
+
+def get_factors(number: int):
+    factors = []
+    for num in range(1, int(math.sqrt(number)) + 1):
+        if number % num == 0:
+            factors.append(num)
+            if number // num != num:
+                factors.append(number // num)
+    return factors
+
 
 def presents_at_house(house: int):
-    presents = 0
-    print("checking " + str(house))
-    for elf in range(1, house + 1):
-        if house % elf == 0:
-            presents += elf * 10
-    return presents
-
-def better_presents_at_house(house: int):
-    result = sum([elf * 10 for elf in range(1, house + 1) if house % elf == 0])
-    print("checking house " + str(house) + ": " + str(result))
+    result = sum(get_factors(house)) * 10
     return result
 
-def main():
-    # house = get_house_number()
-    house = 36000000
 
-    # for h in range(1, 10):
-    #     print(better_presents_at_house(h))
-    better_presents_at_house(36000720)
-    house_presents = better_presents_at_house(house)
+def new_presents_at_house(house: int, visited: dict):
+    factors = get_factors(house)
+    visiting_elfs = []
+
+    for factor in factors:
+        if factor not in visited:
+            visiting_elfs.append(factor)
+            visited[factor] = 1
+            continue
+
+        if visited[factor] < 50:
+            visiting_elfs.append(factor)
+            visited[factor] += 1
+            continue
+
+    return sum(visiting_elfs) * 11
+
+
+def main():
+    presents = get_presents()
+    house = 0
+
     while True:
         house += 1
-        presents = better_presents_at_house(house)
-        if presents >= house_presents:
+
+        house_presents = presents_at_house(house)
+        if house_presents >= presents:
             break
     
     print("Puzzle 1:")
-    # x < 36000600
     print(house)
 
     print("")
 
+    house = 0
+    visited = {}
+    while True:
+        house += 1
+
+        house_presents = new_presents_at_house(house, visited)
+        if house_presents >= presents:
+            break
+
     print("Puzzle 2:")
+    print(house)
 
 
 if __name__ == "__main__":
