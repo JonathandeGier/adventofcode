@@ -4,7 +4,7 @@ import os
 
 class Table:
 
-    def getInput(day):
+    def getInput(self, day):
         file_location = "solutions/2015/input/input" + str(day) + ".txt"
 
         if os.path.isfile(file_location):

@@ -6,7 +6,7 @@ class Day2(Table):
     def __init__(self):
         self.day = 2
         self.title = "I Was Told There Would Be No Math"
-        self.input = Table.getInput(self.day)
+        self.input = self.getInput(self.day)
 
     def get_lines(self):
         lines = self.input.splitlines()

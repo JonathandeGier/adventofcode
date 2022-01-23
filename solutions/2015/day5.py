@@ -6,7 +6,7 @@ class Day5(Table):
     def __init__(self):
         self.day = 5
         self.title = "Doesn't He Have Intern-Elves For This?"
-        self.input = Table.getInput(self.day)
+        self.input = self.getInput(self.day)
 
     def get_strings(self):
         return self.input.splitlines()

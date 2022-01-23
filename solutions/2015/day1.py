@@ -6,7 +6,7 @@ class Day1(Table):
     def __init__(self):
         self.day = 1
         self.title = "Not Quite Lisp"
-        self.input = Table.getInput(self.day)
+        self.input = self.getInput(self.day)
 
     def solve(self):
         start_time = time()

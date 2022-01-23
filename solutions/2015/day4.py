@@ -7,7 +7,7 @@ class Day4(Table):
     def __init__(self):
         self.day = 4
         self.title = "The Ideal Stocking Stuffer"
-        self.input = Table.getInput(self.day)
+        self.input = self.getInput(self.day)
 
     def get_lines(self):
         lines = self.input.splitlines()

@@ -1,104 +1,107 @@
-from getInput import get_input
+from Table import Table
+from time import time
 
-connections = {}
-calcutated = {}
+class Day7(Table):
 
-def get_connections():
-    lines = get_input(2015, 7).splitlines()
-    global connections
-    connections = {}
+    def __init__(self):
+        self.day = 7
+        self.title = "Some Assembly Required"
+        self.input = self.getInput(self.day)
+        self.connections = {}
+        self.calcutated = {}
 
-    for instruction in lines:
-        inout = instruction.split(" -> ")
-        input = inout[0].split(" ")
-        output = inout[1]
+    def get_connections(self):
+        lines = self.input.splitlines()
+        self.connections = {}
 
-        if len(input) == 3:
-            connections[output] = {
-                "a": try_to_int(input[0]),
-                "b": try_to_int(input[2]),
-                "gate": input[1]
-            }
-            # print(connections[output])
-        if len(input) == 2:
-            connections[output] = {
-                "a": try_to_int(input[1]),
-                "b": '',
-                "gate": input[0]
-            }
-            
-        if len(input) == 1:
-            connections[output] = {
-                "a": try_to_int(input[0]),
-                "b": '',
-                "gate": ''
-            }
-    return connections
+        for instruction in lines:
+            inout = instruction.split(" -> ")
+            input = inout[0].split(" ")
+            output = inout[1]
+
+            if len(input) == 3:
+                self.connections[output] = {
+                    "a": self.try_to_int(input[0]),
+                    "b": self.try_to_int(input[2]),
+                    "gate": input[1]
+                }
+            if len(input) == 2:
+                self.connections[output] = {
+                    "a": self.try_to_int(input[1]),
+                    "b": '',
+                    "gate": input[0]
+                }
+                
+            if len(input) == 1:
+                self.connections[output] = {
+                    "a": self.try_to_int(input[0]),
+                    "b": '',
+                    "gate": ''
+                }
+        return self.connections
+
+    def try_to_int(self, value):
+        try:
+            return int(value)
+        except Exception:
+            return value
+
+    def get_output(self, wire):
+        if isinstance(wire, int):
+            return wire
+
+        if wire in self.calcutated:
+            return self.calcutated[wire]
+
+        connection = self.connections[wire]
+
+        if connection["gate"] == "AND":
+            result = self.get_output(connection["a"]) & self.get_output(connection["b"])
+            self.calcutated[wire] = result
+            return result
+        elif connection["gate"] == "OR":
+            result = self.get_output(connection["a"]) | self.get_output(connection["b"])
+            self.calcutated[wire] = result
+            return result
+        elif connection["gate"] == "NOT":
+            result = ~ self.get_output(connection["a"])
+            self.calcutated[wire] = result
+            return result
+        elif connection["gate"] == "LSHIFT":
+            result = self.get_output(connection["a"]) << self.get_output(connection["b"])
+            self.calcutated[wire] = result
+            return result
+        elif connection["gate"] == "RSHIFT":
+            result = self.get_output(connection["a"]) >> self.get_output(connection["b"])
+            self.calcutated[wire] = result
+            return result
+        else: # no gate
+            if isinstance(connection["a"], int):
+                self.calcutated[wire] = connection["a"]
+                return connection["a"]
+            else:
+                return self.get_output(connection["a"])
 
 
-def try_to_int(value):
-    try:
-        return int(value)
-    except Exception:
-        return value
+    def solve(self):
+        start_time = time()
 
-def get_output(wire):
-    if isinstance(wire, int):
-        return wire
+        self.get_connections()
+        part1 = self.get_output("a")
 
-    global connections
-    global calcutated
+        self.connections["b"]["a"] = part1
+        self.calcutated = {}
 
-    if wire in calcutated:
-        return calcutated[wire]
+        part2 = self.get_output("a")
 
-    connection = connections[wire]
+        end_time = time()
+        seconds_elapsed = end_time - start_time
 
-    if connection["gate"] == "AND":
-        result = get_output(connection["a"]) & get_output(connection["b"])
-        calcutated[wire] = result
-        return result
-    elif connection["gate"] == "OR":
-        result = get_output(connection["a"]) | get_output(connection["b"])
-        calcutated[wire] = result
-        return result
-    elif connection["gate"] == "NOT":
-        result = ~ get_output(connection["a"])
-        calcutated[wire] = result
-        return result
-    elif connection["gate"] == "LSHIFT":
-        result = get_output(connection["a"]) << get_output(connection["b"])
-        calcutated[wire] = result
-        return result
-    elif connection["gate"] == "RSHIFT":
-        result = get_output(connection["a"]) >> get_output(connection["b"])
-        calcutated[wire] = result
-        return result
-    else: # no gate
-        if isinstance(connection["a"], int):
-            calcutated[wire] = connection["a"]
-            return connection["a"]
-        else:
-            return get_output(connection["a"])
-
-
-def main():
-    global connections
-    global calcutated
-
-    get_connections()
-    print("Puzzle 1:")
-    a = get_output("a")
-    print("Output at a: " + str(a))
-
-    print("")
-
-    print("Puzzle 2:")
-    connections["b"]["a"] = a
-    calcutated = {}
-    new_a = get_output("a")
-    print("Output at a: " + str(new_a))
+        return (self.day, self.title, part1, part2, seconds_elapsed)
 
 
 if __name__ == "__main__":
-    main()
+    day = Day7()
+    day.printRow(day.headers())
+    day.printRow(day.solve())
+    print("")

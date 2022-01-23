@@ -7,7 +7,7 @@ class Day3(Table):
     def __init__(self):
         self.day = 3
         self.title = "Perfectly Spherical Houses in a Vacuum"
-        self.input = Table.getInput(self.day)
+        self.input = self.getInput(self.day)
 
     def get_lines(self):
         lines = self.input.splitlines()
