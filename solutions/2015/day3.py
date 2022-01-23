@@ -1,91 +1,106 @@
 from getInput import get_input
+from Table import Table
+from time import time
 
-def get_data():
-    return get_input(2015, 3)
+class Day3(Table):
 
+    def __init__(self):
+        self.day = 3
+        self.title = "Perfectly Spherical Houses in a Vacuum"
+        self.input = Table.getInput(self.day)
 
-def main():
+    def get_lines(self):
+        lines = self.input.splitlines()
+        return lines
 
-    visited = {
-        "0,0": 1
-    }
+    def solve(self):
+        start_time = time()
 
-    x = 0
-    y = 0
-    for char in get_data():
-        if char == "^":
-            y += 1
-        if char == "v":
-            y -= 1
-        if char == "<":
-            x -= 1
-        if char == ">":
-            x += 1
+        # Part 1
+        visited = {
+            "0,0": 1
+        }
 
-        location = str(x) + "," + str(y)
-        if location not in visited:
-            visited[location] = 1
-        else:
-            visited[location] += 1
-        
-    multiple_visits = 0
-    for count in visited.values():
-        if count >= 1:
-            multiple_visits += 1
-
-    print("Puzzle 1:")
-    print("Visited houses: " + str(multiple_visits))
-
-    print("")
-
-    visited = {
-        "0,0": 2
-    }
-
-    x1 = 0
-    y1 = 0
-    x2 = 0
-    y2 = 0
-    for i, char in enumerate(get_data()):
-        if i % 2 == 0:
+        x = 0
+        y = 0
+        for char in self.input:
             if char == "^":
-                y1 += 1
+                y += 1
             if char == "v":
-                y1 -= 1
+                y -= 1
             if char == "<":
-                x1 -= 1
+                x -= 1
             if char == ">":
-                x1 += 1
+                x += 1
 
-            location = str(x1) + "," + str(y1)
+            location = str(x) + "," + str(y)
             if location not in visited:
                 visited[location] = 1
             else:
                 visited[location] += 1
-        if i % 2 != 0:
-            if char == "^":
-                y2 += 1
-            if char == "v":
-                y2 -= 1
-            if char == "<":
-                x2 -= 1
-            if char == ">":
-                x2 += 1
             
-            location = str(x2) + "," + str(y2)
-            if location not in visited:
-                visited[location] = 1
-            else:
-                visited[location] += 1
-        
-    multiple_visits = 0
-    for count in visited.values():
-        if count >= 1:
-            multiple_visits += 1
+        multiple_visits = 0
+        for count in visited.values():
+            if count >= 1:
+                multiple_visits += 1
+        part1 = multiple_visits
 
-    print("Puzzle 2:")
-    print("Visited houses: " + str(multiple_visits))
+
+        # Part 2
+        visited = {
+            "0,0": 2
+        }
+
+        x1 = 0
+        y1 = 0
+        x2 = 0
+        y2 = 0
+        for i, char in enumerate(self.input):
+            if i % 2 == 0:
+                if char == "^":
+                    y1 += 1
+                if char == "v":
+                    y1 -= 1
+                if char == "<":
+                    x1 -= 1
+                if char == ">":
+                    x1 += 1
+
+                location = str(x1) + "," + str(y1)
+                if location not in visited:
+                    visited[location] = 1
+                else:
+                    visited[location] += 1
+            if i % 2 != 0:
+                if char == "^":
+                    y2 += 1
+                if char == "v":
+                    y2 -= 1
+                if char == "<":
+                    x2 -= 1
+                if char == ">":
+                    x2 += 1
+                
+                location = str(x2) + "," + str(y2)
+                if location not in visited:
+                    visited[location] = 1
+                else:
+                    visited[location] += 1
+            
+        multiple_visits = 0
+        for count in visited.values():
+            if count >= 1:
+                multiple_visits += 1
+        part2 = multiple_visits
+
+        end_time = time()
+        seconds_elapsed = end_time - start_time
+
+        return (self.day, self.title, part1, part2, seconds_elapsed)
 
 
 if __name__ == "__main__":
-    main()
+    day = Day3()
+    day.printRow(day.headers())
+    day.printRow(day.solve())
+    print("")

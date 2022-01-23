@@ -1,32 +1,37 @@
-from getInput import get_input
+from Table import Table
+from time import time
 
-def get_lines():
-    return get_input(2015, 1)
+class Day1(Table):
 
+    def __init__(self):
+        self.day = 1
+        self.title = "Not Quite Lisp"
+        self.input = Table.getInput(self.day)
 
-def main():
-    data = get_lines()
-    final_floor = data.count("(") - data.count(")")
-    
-    print("Puzzle 1:")
-    print("Final Floor: " + str(final_floor))
+    def solve(self):
+        start_time = time()
+        part1 = self.input.count("(") - self.input.count(")")
 
-    print("")
+        floor = 0
+        pos = 0
+        for i, val in enumerate(self.input):
+            if val == "(":
+                floor += 1
+            else:
+                floor -= 1
+            
+            if floor == -1:
+                pos = i + 1
+                break
 
-    print("Puzzle 2:")
-    floor = 0
-    pos = 0
-    for i, val in enumerate(data):
-        if val == "(":
-            floor += 1
-        else:
-            floor -= 1
-        
-        if floor == -1:
-            pos = i + 1
-            break
-    print("Enter basement at: " + str(pos))
+        end_time = time()
+        seconds_elapsed = end_time - start_time
+
+        return (self.day, self.title, part1, pos, seconds_elapsed)
 
 
 if __name__ == "__main__":
-    main()
+    day = Day1()
+    day.printRow(day.headers())
+    day.printRow(day.solve())
+    print("")

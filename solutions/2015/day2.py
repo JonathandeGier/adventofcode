@@ -1,38 +1,45 @@
-from getInput import get_input
+from Table import Table
+from time import time
 
-def get_lines():
-    lines = get_input(2015, 2).splitlines()
-    data = []
-    for line in lines:
-        row = []
-        for length in line.split("x"):
-            row.append(int(length))
-        row.sort()
-        data.append(row)
+class Day2(Table):
 
-    return data
+    def __init__(self):
+        self.day = 2
+        self.title = "I Was Told There Would Be No Math"
+        self.input = Table.getInput(self.day)
 
+    def get_lines(self):
+        lines = self.input.splitlines()
+        data = []
+        for line in lines:
+            row = []
+            for length in line.split("x"):
+                row.append(int(length))
+            row.sort()
+            data.append(row)
 
-def main():
-    data = get_lines()
+        return data
 
-    totalArea = 0
-    totalRibbon = 0
-    for present in data:
-        area = (2 * present[0] * present[1]) + (2 * present[1] * present[2]) + (2 * present[0] * present[2]) + (present[0] * present[1])
-        totalArea += area
+    def solve(self):
+        start_time = time()
 
-        ribbon = (present[0] + present[0] + present[1] + present[1]) + (present[0] * present[1] * present[2])
-        totalRibbon += ribbon
+        totalArea = 0
+        totalRibbon = 0
+        for present in self.get_lines():
+            area = (2 * present[0] * present[1]) + (2 * present[1] * present[2]) + (2 * present[0] * present[2]) + (present[0] * present[1])
+            totalArea += area
 
-    print("Puzzle 1:")
-    print("Area needed: " + str(totalArea))
+            ribbon = (present[0] + present[0] + present[1] + present[1]) + (present[0] * present[1] * present[2])
+            totalRibbon += ribbon
 
-    print("")
+        end_time = time()
+        seconds_elapsed = end_time - start_time
 
-    print("Puzzle 2:")
-    print("Ribbon needed: " + str(totalRibbon))
+        return (self.day, self.title, totalArea, totalRibbon, seconds_elapsed)
 
 
 if __name__ == "__main__":
-    main()
+    day = Day2()
+    day.printRow(day.headers())
+    day.printRow(day.solve())
+    print("")
