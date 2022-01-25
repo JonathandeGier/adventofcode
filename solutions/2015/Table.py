@@ -28,4 +28,7 @@ class Table:
     def printRow(self, values):
         if values[0] == self.headers()[0]:
             print("")
-        print(f"{values[0]:<5} {values[1]:<40} {values[2]:<10} {values[3]:<10} {values[4]:<20}")
+        print(self.format(values), end="")
+
+    def format(self, values):
+        return f"{values[0]:<5} {values[1]:<40} {values[2]:<15} {values[3]:<15} {values[4]:<20}\n"

@@ -1,26 +1,6 @@
-from getInput import get_input
 from itertools import product
-
-def get_boss_stats():
-    input = get_input(2015, 22)
-    numbers = []
-    for line in input.splitlines():
-        number = int(line.split(":")[1].strip())
-        numbers.append(number)
-
-    return {
-        "hp": numbers[0],
-        "damage": numbers[1],
-    }
-
-
-SPELLS = [
-    { "name": "Magic Missile",  "cost": 53,   "damage": 4,  "heal": 0,  "effect": "",          "turns": 0 },
-    { "name": "Drain",          "cost": 73,   "damage": 2,  "heal": 2,  "effect": "",          "turns": 0 },
-    { "name": "Shield",         "cost": 113,  "damage": 0,  "heal": 0,  "effect": "shield",    "turns": 6 },
-    { "name": "Poison",         "cost": 173,  "damage": 0,  "heal": 0,  "effect": "poison",    "turns": 6 },
-    { "name": "Recharge",       "cost": 229,  "damage": 0,  "heal": 0,  "effect": "recharge",  "turns": 5 },
-]
+from Table import Table
+from time import time
 
 class NotEnoughManaException(Exception):
     pass
@@ -94,98 +74,127 @@ class Player:
     def is_defeated(self):
         return self.hp <= 0
 
-def play(player: Player, boss: Player, spells: list, hard: bool = False):
-    try:
-        for i, spell in enumerate(spells):
-            if hard:
-                player.hit(1)
 
-            player.effect()
-            boss.effect()
+class Day22(Table):
 
-            if player.is_defeated():
-                return 'boss', i - 1
-            elif boss.is_defeated():
-                return 'player', i - 1
+    def __init__(self):
+        self.day = 22
+        self.title = "Wizard Simulator 20XX"
+        self.input = self.getInput(self.day)
 
-            player.cast(spell)
-            boss.apply_effect(spell)
+        self.SPELLS = [
+            { "name": "Magic Missile",  "cost": 53,   "damage": 4,  "heal": 0,  "effect": "",          "turns": 0 },
+            { "name": "Drain",          "cost": 73,   "damage": 2,  "heal": 2,  "effect": "",          "turns": 0 },
+            { "name": "Shield",         "cost": 113,  "damage": 0,  "heal": 0,  "effect": "shield",    "turns": 6 },
+            { "name": "Poison",         "cost": 173,  "damage": 0,  "heal": 0,  "effect": "poison",    "turns": 6 },
+            { "name": "Recharge",       "cost": 229,  "damage": 0,  "heal": 0,  "effect": "recharge",  "turns": 5 },
+        ]
 
-            if player.is_defeated():
-                return 'boss', i
-            elif boss.is_defeated():
-                return 'player', i
+    def get_boss_stats(self):
+        numbers = []
+        for line in self.input.splitlines():
+            number = int(line.split(":")[1].strip())
+            numbers.append(number)
 
-            player.effect()
-            boss.effect()
+        return {
+            "hp": numbers[0],
+            "damage": numbers[1],
+        }
 
-            if player.is_defeated():
-                return 'boss', i
-            elif boss.is_defeated():
-                return 'player', i
+    def play(self, player: Player, boss: Player, spells: list, hard: bool = False):
+        try:
+            for i, spell in enumerate(spells):
+                if hard:
+                    player.hit(1)
 
-            player.hit(boss.damage)
+                player.effect()
+                boss.effect()
 
-            if player.is_defeated():
-                return 'boss', i
-            elif boss.is_defeated():
-                return 'player', i
-    except NotEnoughManaException:
-        return 'boss', i
-    except SpellCastException:
+                if player.is_defeated():
+                    return 'boss', i - 1
+                elif boss.is_defeated():
+                    return 'player', i - 1
+
+                player.cast(spell)
+                boss.apply_effect(spell)
+
+                if player.is_defeated():
+                    return 'boss', i
+                elif boss.is_defeated():
+                    return 'player', i
+
+                player.effect()
+                boss.effect()
+
+                if player.is_defeated():
+                    return 'boss', i
+                elif boss.is_defeated():
+                    return 'player', i
+
+                player.hit(boss.damage)
+
+                if player.is_defeated():
+                    return 'boss', i
+                elif boss.is_defeated():
+                    return 'player', i
+        except NotEnoughManaException:
+            return 'boss', i
+        except SpellCastException:
+            return 'neiter', i
+
         return 'neiter', i
 
-    return 'neiter', i
-        
+    def solve(self):
+        start_time = time()
 
-def main():
+        boss_stats = self.get_boss_stats()
 
-    boss_stats = get_boss_stats()
+        lowest_mana_win = 99999999999999999999999
+        for spells in product(self.SPELLS, repeat=9):
+            player = Player(50, 0, 500)
+            boss = Player(boss_stats["hp"], boss_stats["damage"], 0)
 
-    lowest_mana_win = 99999999999999999999999
-    for spells in product(SPELLS, repeat=9):
-        player = Player(50, 0, 500)
-        boss = Player(boss_stats["hp"], boss_stats["damage"], 0)
+            winner, spell_index = self.play(player, boss, spells)
 
-        winner, spell_index = play(player, boss, spells)
+            mana_cost = 0
+            for i, spell in enumerate(spells):
+                mana_cost += spell["cost"]
 
-        mana_cost = 0
-        for i, spell in enumerate(spells):
-            mana_cost += spell["cost"]
+                if i == spell_index:
+                    break
 
-            if i == spell_index:
-                break
+            if winner == "player" and mana_cost < lowest_mana_win:
+                lowest_mana_win = mana_cost
 
-        if winner == "player" and mana_cost < lowest_mana_win:
-            print("lowest cost yet: " + str(mana_cost) + " in " + str(spell_index + 1) + " spells")
-            lowest_mana_win = mana_cost
+        part1 = lowest_mana_win
 
+        lowest_mana_win = 99999999999999999999999
+        for spells in product(self.SPELLS, repeat=9):
+            player = Player(50, 0, 500)
+            boss = Player(boss_stats["hp"], boss_stats["damage"], 0)
 
-    print("Puzzle 1:")
-    print(lowest_mana_win)
-    print("")
+            winner, spell_index = self.play(player, boss, spells, True)
 
-    lowest_mana_win = 99999999999999999999999
-    for spells in product(SPELLS, repeat=9):
-        player = Player(50, 0, 500)
-        boss = Player(boss_stats["hp"], boss_stats["damage"], 0)
+            mana_cost = 0
+            for i, spell in enumerate(spells):
+                mana_cost += spell["cost"]
 
-        winner, spell_index = play(player, boss, spells, True)
+                if i == spell_index:
+                    break
 
-        mana_cost = 0
-        for i, spell in enumerate(spells):
-            mana_cost += spell["cost"]
+            if winner == "player" and mana_cost < lowest_mana_win:
+                lowest_mana_win = mana_cost
 
-            if i == spell_index:
-                break
+        part2 = lowest_mana_win
 
-        if winner == "player" and mana_cost < lowest_mana_win:
-            print("lowest cost yet: " + str(mana_cost) + " in " + str(spell_index + 1) + " spells")
-            lowest_mana_win = mana_cost
+        end_time = time()
+        seconds_elapsed = end_time - start_time
 
-    print("Puzzle 2:")
-    print(lowest_mana_win)
+        return (self.day, self.title, part1, part2, seconds_elapsed)
 
 
 if __name__ == "__main__":
-    main()
+    day = Day22()
+    day.printRow(day.headers())
+    day.printRow(day.solve())
+    print("")

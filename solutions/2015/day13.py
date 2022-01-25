@@ -1,74 +1,81 @@
-from getInput import get_input
 from itertools import permutations
+from Table import Table
+from time import time
 
-def get_preferences():
-    input = get_input(2015, 13).splitlines()
-    preferences = {}
-    names = []
-    for line in input:
-        segments = line[:len(line) - 1].split(" ")
-        personA = segments[0]
-        personB = segments[-1]
-        amount = int(segments[3])
-        if segments[2] == "lose":
-            amount *= -1
+class Day13(Table):
 
-        if personA not in preferences:
-            preferences[personA] = {personB: amount}
-            names.append(personA)
-        else:
-            preferences[personA][personB] = amount
-    return preferences, names
+    def __init__(self):
+        self.day = 13
+        self.title = "Knights of the Dinner Table"
+        self.input = self.getInput(self.day)
 
+    def get_preferences(self):
+        preferences = {}
+        names = []
+        for line in self.input.splitlines():
+            segments = line[:len(line) - 1].split(" ")
+            personA = segments[0]
+            personB = segments[-1]
+            amount = int(segments[3])
+            if segments[2] == "lose":
+                amount *= -1
 
-def total_happiness(arrangement, preferences):
-    total_happiness = 0
-    for i, person in enumerate(arrangement):
-        left = i - 1
-        right = i + 1
-        if right == len(arrangement):
-            right = 0
-
-        total_happiness += preferences[person][arrangement[left]]
-        total_happiness += preferences[person][arrangement[right]]
-    return total_happiness
+            if personA not in preferences:
+                preferences[personA] = {personB: amount}
+                names.append(personA)
+            else:
+                preferences[personA][personB] = amount
+        return preferences, names
 
 
+    def total_happiness(self, arrangement, preferences):
+        total_happiness = 0
+        for i, person in enumerate(arrangement):
+            left = i - 1
+            right = i + 1
+            if right == len(arrangement):
+                right = 0
 
-def main():
-    preferences, names = get_preferences()
+            total_happiness += preferences[person][arrangement[left]]
+            total_happiness += preferences[person][arrangement[right]]
+        return total_happiness
+
+    def solve(self):
+        start_time = time()
+
+        preferences, names = self.get_preferences()
     
-    possebilities = list(permutations(names))
-    
-    max_happiness = 0
-    for arrangement in possebilities:
-        happiness = total_happiness(arrangement, preferences)
-        if happiness > max_happiness:
-            max_happiness = happiness
+        
+        max_happiness = 0
+        for arrangement in permutations(names):
+            happiness = self.total_happiness(arrangement, preferences)
+            if happiness > max_happiness:
+                max_happiness = happiness
+        part1 = max_happiness
 
-    print("Puzzle 1:")
-    print("Hax Happiness: " + str(max_happiness))
-    print("")
+        me = "me"
+        names.append(me)
+        my_preferences = {}
+        for person in preferences.keys():
+            preferences[person][me] = 0
+            my_preferences[person] = 0
+        preferences[me] = my_preferences
+        
+        max_happiness = 0
+        for arrangement in permutations(names):
+            happiness = self.total_happiness(arrangement, preferences)
+            if happiness > max_happiness:
+                max_happiness = happiness
+        part2 = max_happiness
 
-    me = "me"
-    names.append(me)
-    my_preferences = {}
-    for person in preferences.keys():
-        preferences[person][me] = 0
-        my_preferences[person] = 0
-    preferences[me] = my_preferences
+        end_time = time()
+        seconds_elapsed = end_time - start_time
 
-    possebilities = list(permutations(names))
-    
-    max_happiness = 0
-    for arrangement in possebilities:
-        happiness = total_happiness(arrangement, preferences)
-        if happiness > max_happiness:
-            max_happiness = happiness
-
-    print("Puzzle 2:")
-    print("Hax Happiness with me: " + str(max_happiness))
+        return (self.day, self.title, part1, part2, seconds_elapsed)
 
 
 if __name__ == "__main__":
-    main()
+    day = Day13()
+    day.printRow(day.headers())
+    day.printRow(day.solve())
+    print("")

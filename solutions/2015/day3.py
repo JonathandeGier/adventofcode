@@ -1,4 +1,3 @@
-from getInput import get_input
 from Table import Table
 from time import time
 
