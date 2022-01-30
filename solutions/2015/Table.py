@@ -5,7 +5,8 @@ import os
 class Table:
 
     def getInput(self, day):
-        file_location = "solutions/2015/input/input" + str(day) + ".txt"
+        directory = "solutions/2015/input/"
+        file_location = directory + "input" + str(day) + ".txt"
 
         if os.path.isfile(file_location):
             return open(file_location, "r").read()
@@ -15,6 +16,9 @@ class Table:
         url = "https://adventofcode.com/2015/day/" + str(day) + "/input"
 
         text = requests.get(url, cookies={"session": session}).text
+
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
 
         file = open(file_location, "w")
         file.write(text)
