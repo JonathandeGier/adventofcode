@@ -1,6 +1,9 @@
 from Table import Table
 from time import time
+
+# _md5 implementation runs about 10 seconds faster than hashlib (~30% improvement)
 import hashlib
+from _md5 import md5
 
 class Day5(Table):
 
@@ -20,7 +23,8 @@ class Day5(Table):
         i = 0
         while "_" in password2:
             word = self.input + str(i)
-            hash = hashlib.md5(word.encode()).hexdigest()
+            # hash = hashlib.md5(word.encode()).hexdigest()
+            hash = md5(word.encode()).hexdigest()
             if self.starts_with_5_zeros(hash):
                 if len(password1) < 8:
                     password1.append(hash[5])
