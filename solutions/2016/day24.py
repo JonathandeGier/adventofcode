@@ -59,15 +59,19 @@ class Day24(Table):
         end_node = Node(None, end)
 
         queue = []
-        visited = set()
+        visited = {}
 
         heapq.heappush(queue, (0, start, start_node))
 
         while len(queue) > 0:
 
             # get node with lowest cost
-            lll, _, current_node = heapq.heappop(queue)
-            visited.add(current_node.position)
+            length, _, current_node = heapq.heappop(queue)
+
+            if current_node.position in visited:
+                continue
+
+            visited[current_node.position] = length
 
             # check if the current node is the end node and return the path if so
             if current_node == end_node:
@@ -99,14 +103,13 @@ class Day24(Table):
                 directions.append(new_node)
 
             for direction in directions:
-                if direction.position in visited:
-                    continue
 
                 direction.g = current_node.g + 1
-                direction.h = ((direction.position[0] - end_node.position[0]) ** 2) + ((direction.position[1] - end_node.position[1]) ** 2)
-                direction.f = direction.g + (direction.h * (1 / direction.g))
+                direction.f = direction.g + direction.h
+                
+                if direction.position not in visited or visited[direction.position] > direction.h:
+                    heapq.heappush(queue, (direction.f, direction.position, direction))
 
-                heapq.heappush(queue, (direction.f, direction.position, direction))
 
         # No path found
         return False
