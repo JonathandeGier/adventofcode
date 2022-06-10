@@ -29,10 +29,10 @@ class Table:
     def headers(self):
         return ("Day", "Title", "Part 1", "Part 2", "Time (s)")
 
-    def printRow(self, values):
+    def printRow(self, values, end = "\n"):
         if values[0] == self.headers()[0]:
             print("")
-        print(self.format(values), end="")
+        print(self.format(values), end=end)
 
     def format(self, values):
-        return f"{values[0]:<5} {values[1]:<40} {values[2]:<18} {values[3]:<34} {values[4]:<20}\n"
+        return f"{values[0]:<5} {values[1]:<40} {values[2]:<18} {values[3]:<34} {values[4]:<20}"
