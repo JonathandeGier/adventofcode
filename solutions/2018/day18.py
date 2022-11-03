@@ -16,7 +16,7 @@ class Day18(Table):
         self.title = "Settlers of The North Pole"
         self.input = self.getInput(self.day)
 
-        self.make_video = False
+        self.make_video = True
         self.video = None
 
         self.map = None
@@ -116,18 +116,21 @@ class Day18(Table):
         return (self.day, self.title, part1, part2, seconds_elapsed)
 
     def image(self):
-        img = Image.new('RGB', (200, 200), "black")
+        img = Image.new('RGB', (50, 50), "black")
         pixels = img.load()
         for x in range(img.size[0]):
             for y in range(img.size[1]):
-                if self.map[(x // 4, y // 4)] == '.':
+                if self.map[x, y] == '.':
                     pixels[x,y] = (0, 255, 0)
-                elif self.map[(x // 4, y // 4)] == '|':
+                elif self.map[x, y] == '|':
                     pixels[x,y] = (0, 110, 0)
-                elif self.map[(x // 4, y // 4)] == '#':
+                elif self.map[x, y] == '#':
                     pixels[x,y] = (207, 160, 41)
                 else:
                     pixels[x,y] = (255, 255, 255)
+
+        scale = 10
+        img = img.resize((img.size[0] * scale, img.size[1] * scale), Image.NEAREST)
 
         return img
 

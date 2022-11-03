@@ -24,7 +24,7 @@ class Day20(Table):
         self.input = self.getInput(self.day).strip()[1:-1]
 
         self.image_bounds = None
-        self.make_video = True
+        self.make_video = False
         self.video = None
 
         # north = y--, east = x++, south = y++, west = x--
