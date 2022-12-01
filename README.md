@@ -6,7 +6,7 @@ Welcome to my Advent of Code GitHub repo. At the moment I have solved all puzzle
 There are 2 ways to provide the input for the solutions. <br>
 The first way is to put the input file in `solutions\<year>\input\input<day>.txt`. Where `year` and `day` are the spesific year and day of the puzzle. <br>
 
-The second way is to get your Avdent of Code session and put it in the file `session` (no file extensions) in the root of the project. This will get your personal input automatically create the input file explained above.
+The second way is to get your Avdent of Code session and put it in the `env` file (no file extensions) in the root of the project. Since this project does automatic requests, you also have to provide contact information in the `env` file as per Topaz's request. An example env file is also provided. This will get your personal input automatically create the input file explained above. 
 
 ### 2. Run the solution
 Execute the python files from the root directory. <br>
