@@ -43,6 +43,13 @@ class Table:
 
         return text
 
+    def visual_path(self, name: str):
+        directory = 'solutions/2022/visuals/'
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+
+        return directory + name
+
     def headers(self):
         return ("Day", "Title", "Part 1", "Part 2", "Time (s)")
 
@@ -52,4 +59,4 @@ class Table:
         print(self.format(values), end=end)
 
     def format(self, values):
-        return f"{values[0]:<5} {values[1]:<40} {values[2]:<30} {values[3]:<34} {values[4]:<20}"
+        return f"{values[0]:<5} {values[1]:<40} {values[2]:<15} {values[3]:<15} {values[4]:<20}"
