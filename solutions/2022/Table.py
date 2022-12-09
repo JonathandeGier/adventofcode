@@ -48,6 +48,10 @@ class Table:
         if not os.path.isdir(directory):
             os.mkdir(directory)
 
+        directory += 'day' + str(self.day) + '/'
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+
         return directory + name
 
     def headers(self):

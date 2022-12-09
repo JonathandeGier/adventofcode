@@ -10,6 +10,8 @@ class Day8(Table):
         self.title = "Treetop Tree House"
         self.input = self.getInput(self.day)
 
+        self.make_image = False
+
         self.map = None
 
     def load_map(self):
@@ -87,7 +89,8 @@ class Day8(Table):
         end_time = time()
         seconds_elapsed = end_time - start_time
 
-        self.image(visables, best).save(self.visual_path('map.png'))
+        if self.make_image:
+            self.image(visables, best).save(self.visual_path('map.png'))
 
         return (self.day, self.title, part1, part2, seconds_elapsed)
 
