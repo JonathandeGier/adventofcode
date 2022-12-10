@@ -4,22 +4,11 @@ from PIL import Image
 import cv2
 from numpy import asarray
 
-HEAD = 'H'
-TAIL = 'T'
-
 MOVE = {
     'U': (0, 1),
     'D': (0, -1),
     'L': (-1, 0),
     'R': (1, 0),
-}
-
-# position relative to the head
-TAIL_MOVE = {
-    'U': (0, -1),
-    'D': (0, 1),
-    'L': (1, 0),
-    'R': (-1, 0),
 }
 
 # if a leading knot is in one of these relative positions, we do not need to move the current knot
