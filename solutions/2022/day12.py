@@ -2,6 +2,8 @@ from Table import Table
 from time import time
 import heapq
 from PIL import Image
+import cv2
+from numpy import asarray
 
 class Node():
     """A node class for A* Pathfinding"""
@@ -29,6 +31,9 @@ class Day12(Table):
 
         self.max_x = 0
         self.max_y = 0
+
+        self.make_image = True
+        self.make_video = True
 
     def load_map(self):
         self.map = {}
@@ -106,21 +111,27 @@ class Day12(Table):
 
         self.load_map()
 
-        self.image().save(self.visual_path('map.png'))
 
         path = self.astar(self.start, self.end)
         part1 = len(path) - 1
 
-        self.image(path).save(self.visual_path('map-part1.png'))
+        if self.make_image:
+            self.image().save(self.visual_path('map.png'))
+            self.image(path).save(self.visual_path('map-part1.png'))
+
+        if self.make_video:
+            self.video([], path, 'part1')
 
         # there are a lot of positions with value a
         # there is a "wall" of value b that we have to go through on x=1, since all values where x>1 are a or greater than b
         # to limit the search space, only select start positions on x=0
         possible_starts = [position for position in self.map.keys() if self.map[position] == 1 and position[0] == 0]
         min_distance = 1_000_000_000_000
+        all_paths = []
         shortest_path = []
         for start in possible_starts:
             path = self.astar(start, self.end)
+            all_paths.append(path)
             if path == False:
                 continue
 
@@ -131,7 +142,11 @@ class Day12(Table):
 
         part2 = min_distance
 
-        self.image(shortest_path).save(self.visual_path('map-part2.png'))
+        if self.make_image:
+            self.image(shortest_path).save(self.visual_path('map-part2.png'))
+
+        if self.make_video:
+            self.video(all_paths, shortest_path, 'part2', 60)
 
         end_time = time()
 
@@ -148,12 +163,33 @@ class Day12(Table):
 
         for location in path:
             value = self.map[location] * 10
-            pixels[location] = (value, value, value // 2)
+            pixels[location] = (max(value, 40), max(value, 40), max(value // 2, 20))
 
-        scale = 8
+        scale = 10
         img = img.resize((img.size[0] * scale, img.size[1] * scale), Image.Resampling.NEAREST)
 
         return img
+
+    def video(self, paths: list, final_path: list, name: str, fps = 30):
+        img = self.image()
+        video = cv2.VideoWriter(self.visual_path(name + '.mp4'), cv2.VideoWriter_fourcc(*'MP4V'), fps, img.size)
+        video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+
+        for path in paths:
+            for i in range(0, len(path), 5):
+                img = self.image(path[:i])
+                video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+
+        for i in range(len(final_path)):
+            img = self.image(final_path[:i])
+            video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+
+        img = self.image(final_path)
+        for _ in range(fps * 5):
+            video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+
+        video.release()
+        cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
