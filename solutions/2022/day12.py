@@ -32,8 +32,8 @@ class Day12(Table):
         self.max_x = 0
         self.max_y = 0
 
-        self.make_image = True
-        self.make_video = True
+        self.make_image = False
+        self.make_video = False
 
     def load_map(self):
         self.map = {}
