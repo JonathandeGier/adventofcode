@@ -50,9 +50,15 @@ class Day12(Table):
                 else:
                     self.map[x, y] = ord(val) - 96
 
-    def astar(self, start: tuple, end: tuple):
+    def astar(self, start: tuple, end: tuple, make_video = False):
         start_node = Node(None, start)
         end_node = Node(None, end)
+
+        video = None
+        if make_video:
+            img = self.image()
+            video = cv2.VideoWriter(self.visual_path('path.mp4'), cv2.VideoWriter_fourcc(*'MP4V'), 30, img.size)
+            video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
 
         queue = []
         visited = {}
@@ -69,6 +75,10 @@ class Day12(Table):
 
             visited[current_node.position] = length
 
+            if make_video:
+                img = self.image([], visited.keys())
+                video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+
             # check if the current node is the end node and return the path if so
             if current_node == end_node:
                 path = []
@@ -76,6 +86,20 @@ class Day12(Table):
                 while current is not None:
                     path.append(current.position)
                     current = current.parent
+
+                    if make_video:
+                        img = self.image(path, visited.keys())
+                        video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+
+                # video stuff
+                if make_video:
+                    img = self.image(path, visited.keys())
+                    for _ in range(150):
+                        video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
+                    
+                    video.release()
+                    cv2.destroyAllWindows()
+
                 return path[::-1]
 
             # generate next possible directions
@@ -103,6 +127,9 @@ class Day12(Table):
                 if direction.position not in visited or visited[direction.position] > direction.h:
                     heapq.heappush(queue, (direction.f, direction.position, direction))
 
+        video.release()
+        cv2.destroyAllWindows()
+
         # No path found
         return False
 
@@ -111,8 +138,7 @@ class Day12(Table):
 
         self.load_map()
 
-
-        path = self.astar(self.start, self.end)
+        path = self.astar(self.start, self.end, self.make_video)
         part1 = len(path) - 1
 
         if self.make_image:
@@ -154,12 +180,16 @@ class Day12(Table):
 
         return (self.day, self.title, part1, part2, seconds_elapsed)
 
-    def image(self, path: list = []):
+    def image(self, path: list = [], highlight = []):
         img = Image.new('RGB', (self.max_x + 1, self.max_y + 1), 'black')
         pixels = img.load()
         for location in self.map.keys():
             value = self.map[location] * 8
             pixels[location] = (value, value, value)
+
+        for location in highlight:
+            value = self.map[location] * 10
+            pixels[location] = (0, 0, max(value, 40))
 
         for location in path:
             value = self.map[location] * 10
