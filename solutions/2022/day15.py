@@ -83,7 +83,6 @@ class Day15(Table):
         self.load_sensors()
 
         row = 2_000_000
-        # row = 10
 
         ranges = [sensor.row(row) for sensor in self.sensors if sensor.row(row) is not None]
 
@@ -95,20 +94,19 @@ class Day15(Table):
         part1 = sum([_range[1] - _range[0] + 1 for _range in ranges]) - beacons_in_row - sensors_in_row
         
         
-        # for y in range(4_000_000):
-        #     if y % 1000 == 0:
-        #         print(y)
-        #     ranges = [sensor.row(y, (0, 4_000_000)) for sensor in self.sensors if sensor.row(y, (0, 4_000_000)) is not None]
-        #     ranges = self.merge_ranges(ranges)
-        #     if len(ranges) == 2:
-        #         print(ranges, y)
-        #         break
-            
-        part2 = (2889465 * 4000000) + 3040754
+        for y in range(4_000_000):
+            if y % 10000 == 0:
+                percentage = str(round(y / 4_000_000 * 100, 1)) + ' %'
+                self.printRow((self.day, self.title, part1, percentage, ''), end='\r')
+            ranges = [sensor.row(y, (0, 4_000_000)) for sensor in self.sensors if sensor.row(y, (0, 4_000_000)) is not None]
+            ranges = self.merge_ranges(ranges)
+            if len(ranges) == 2:
+                x = min([_range[1] for _range in ranges]) + 1
+                part2 = (x * 4_000_000) + y
+                break
 
         end_time = time()
         seconds_elapsed = end_time - start_time
-        seconds_elapsed += 117.3
 
         return (self.day, self.title, part1, part2, seconds_elapsed)
 
