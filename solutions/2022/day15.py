@@ -1,5 +1,6 @@
 from Table import Table
 from time import time
+from multiprocessing import Pool, cpu_count
 
 def manhatten(pos1: tuple, pos2: tuple)-> int:
     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
@@ -23,9 +24,7 @@ class Sensor:
             else:
                 return
 
-        return _range
-
-        
+        return _range   
 
 class Beacon:
     def __init__(self, position: tuple):
@@ -77,6 +76,19 @@ class Day15(Table):
             ranges = merged_ranges
         return ranges
 
+    def check_rows(self, start, end, print = False):
+        for y in range(start, end):
+
+            if print and y % 10000 == 0:
+                percentage = str(round(y / 4_000_000 * 100, 1)) + ' %'
+                self.printRow((self.day, self.title, '', percentage, ''), end='\r')
+
+            ranges = [sensor.row(y, (0, 4_000_000)) for sensor in self.sensors if sensor.row(y, (0, 4_000_000)) is not None]
+            ranges = self.merge_ranges(ranges)
+            if len(ranges) == 2:
+                x = min([_range[1] for _range in ranges]) + 1
+                return (x * 4_000_000) + y
+
     def solve(self):
         start_time = time()
 
@@ -93,17 +105,16 @@ class Day15(Table):
 
         part1 = sum([_range[1] - _range[0] + 1 for _range in ranges]) - beacons_in_row - sensors_in_row
         
-        
-        for y in range(4_000_000):
-            if y % 10000 == 0:
-                percentage = str(round(y / 4_000_000 * 100, 1)) + ' %'
-                self.printRow((self.day, self.title, part1, percentage, ''), end='\r')
-            ranges = [sensor.row(y, (0, 4_000_000)) for sensor in self.sensors if sensor.row(y, (0, 4_000_000)) is not None]
-            ranges = self.merge_ranges(ranges)
-            if len(ranges) == 2:
-                x = min([_range[1] for _range in ranges]) + 1
-                part2 = (x * 4_000_000) + y
-                break
+        self.printRow((self.day, self.title, part1, 'Multiprocessing...', ''), end='\r')
+
+        rows = 4_000_000
+        batches = 200
+        rows_per_batch = rows // batches
+
+        with Pool(cpu_count()) as p:
+            result = p.starmap(self.check_rows, [(i*rows_per_batch, (i+1) * rows_per_batch) for i in range(batches)])
+
+        part2 = [val for val in result if val is not None][0]
 
         end_time = time()
         seconds_elapsed = end_time - start_time
