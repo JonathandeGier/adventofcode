@@ -45,7 +45,7 @@ class Day17(Table):
         self.jetstream = []
         self.shapes = []
 
-        self.make_video = False
+        self.make_video = True
         self.video = None
 
     def load_pattern(self):
