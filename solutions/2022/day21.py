@@ -29,10 +29,65 @@ class Monkey:
         elif self.operation == '-':
             return first - second
         elif self.operation == '=':
-            print(first, '==', second)
+            # print(first, '==', second)
             return first == second
         else:
             assert False, self.operation
+
+    def find_human(self) -> set:
+        if self.name == 'humn':
+            return set([self.name])
+
+        if self.value is not None:
+            return None
+
+        first_path = self.first.find_human()
+        second_path = self.second.find_human()
+
+        if first_path is not None:
+            first_path.add(self.name)
+            return first_path
+        elif second_path is not None:
+            second_path.add(self.name)
+            return second_path
+        else:
+            return None
+
+    def solve(self, path: set, value = None):
+        if self.name == 'humn':
+            return value
+
+        if self.first_name in path:
+            if self.operation == '=':
+                new_value = self.second.eval()
+            elif self.operation == '*':
+                new_value = value / self.second.eval()
+            elif self.operation == '/':
+                new_value = value * self.second.eval()
+            elif self.operation == '+':
+                new_value = value - self.second.eval()
+            elif self.operation == '-':
+                new_value = value + self.second.eval()
+            else:
+                assert False
+
+            return self.first.solve(path, new_value)
+        elif self.second_name in path:
+            if self.operation == '=':
+                new_value = self.first.eval()
+            elif self.operation == '*':
+                new_value = value / self.first.eval()
+            elif self.operation == '/':
+                new_value = value / self.first.eval()
+            elif self.operation == '+':
+                new_value = value - self.first.eval()
+            elif self.operation == '-':
+                new_value = self.first.eval() - value
+            else:
+                assert False
+
+            return self.second.solve(path, new_value)
+        assert False
 
     def to_me(self):
 
@@ -83,23 +138,24 @@ class Day21(Table):
             if monkey.second_name is not None:
                 monkey.second = self.monkeys[monkey.second_name]
 
+
     def solve(self):
         start_time = time()
 
         self.load_monkeys()
 
-        part1 = round(self.monkeys['root'].eval(), 0)
+        part1 = int(self.monkeys['root'].eval())
 
-        # 68634163890831.95
-        # 15610303684582.0
+        path = self.monkeys['root'].find_human()
         
-        self.monkeys['humn'].value = 3759569925000
         self.monkeys['root'].operation = '='
-        while not self.monkeys['root'].eval():
-            self.monkeys['humn'].value += 1
-            # exit()
+        part2 = int(self.monkeys['root'].solve(path))
+        # self.monkeys['humn'].value = 3759569925000
+        # while not self.monkeys['root'].eval():
+        #     self.monkeys['humn'].value += 1
+        #     # exit()
 
-        part2 = self.monkeys['humn'].value
+        # part2 = self.monkeys['humn'].value
 
         end_time = time()
         seconds_elapsed = end_time - start_time
