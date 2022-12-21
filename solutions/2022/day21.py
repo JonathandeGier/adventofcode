@@ -146,16 +146,10 @@ class Day21(Table):
 
         part1 = int(self.monkeys['root'].eval())
 
+        self.monkeys['root'].operation = '='
         path = self.monkeys['root'].find_human()
         
-        self.monkeys['root'].operation = '='
         part2 = int(self.monkeys['root'].solve(path))
-        # self.monkeys['humn'].value = 3759569925000
-        # while not self.monkeys['root'].eval():
-        #     self.monkeys['humn'].value += 1
-        #     # exit()
-
-        # part2 = self.monkeys['humn'].value
 
         end_time = time()
         seconds_elapsed = end_time - start_time
