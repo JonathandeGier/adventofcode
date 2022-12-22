@@ -89,7 +89,7 @@ class Monkey:
             return self.second.solve(path, new_value)
         assert False
 
-    def to_me(self):
+    def equation(self):
 
         if self.name == 'humn':
             return 'x'
@@ -100,8 +100,8 @@ class Monkey:
         if self.name == 'root':
             self.operation = '='
         
-        from_first = self.first.to_me()
-        from_second = self.second.to_me()
+        from_first = self.first.equation()
+        from_second = self.second.equation()
 
         if from_first is not None:
             return '(' + from_first + ' ' + self.operation + ' ' + str(self.second.eval()) + ')'
