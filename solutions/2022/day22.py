@@ -692,8 +692,6 @@ class Day22(Table):
         #     video.write(cv2.cvtColor(asarray(img), cv2.COLOR_BGR2RGB))
         # video.release()
 
-        # 38374 < x < ...
-        # 162155
         part2 = (1000 * position[0]) + (4 * position[1]) + DIRECTION_VALUES[direction]
 
         if self.make_image:
