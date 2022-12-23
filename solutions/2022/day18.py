@@ -12,7 +12,7 @@ class Day18(Table):
         self.title = "Boiling Boulders"
         self.input = self.getInput(self.day)
         
-        self.make_video = True
+        self.make_video = False
 
         self.droplets = set()
 
