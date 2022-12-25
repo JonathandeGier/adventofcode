@@ -160,7 +160,7 @@ class Day22(Table):
             BACK: None,
         }
 
-        self.make_image = True
+        self.make_image = False
 
 
     def load_map(self):
