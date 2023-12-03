@@ -1,6 +1,7 @@
 import requests
 import os
 
+from PIL import Image
 
 class Table:
 
@@ -53,6 +54,33 @@ class Table:
             os.mkdir(directory)
 
         return directory + name
+    
+    def image_map(self, data: map, colors: map, bounds: tuple = None, scale: int = 1):
+        # bounds = None
+        # scale = 1
+        # if 'bounds' in kwargs:
+        #     bounds = kwargs['bounds']
+        # if 'scale' in kwargs:
+        #     scale = kwargs['scale']
+
+        if bounds is None:
+            min_x = min([coord[0] for coord in data.keys()])
+            max_x = max([coord[0] for coord in data.keys()])
+            min_y = min([coord[1] for coord in data.keys()])
+            max_y = max([coord[1] for coord in data.keys()])
+
+            bounds = (min_x, max_x, min_y, max_y)
+
+        img = Image.new('RGB', (bounds[1] - bounds[0] + 1, bounds[3] - bounds[2] + 1), "black")
+        pixels = img.load()
+        for position in data:
+            if data[position] in colors:
+                pixel = position[0] - bounds[0], position[1] - bounds[2]
+                pixels[pixel] = colors[data[position]]
+
+        img = img.resize((img.size[0] * scale, img.size[1] * scale), Image.Resampling.NEAREST)
+        return img
+
 
     def headers(self):
         return ("Day", "Title", "Part 1", "Part 2", "Time (s)")
