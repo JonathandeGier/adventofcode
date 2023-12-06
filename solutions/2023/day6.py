@@ -1,5 +1,6 @@
 from Table import Table
 from time import time
+import math
 
 class Day6(Table):
 
@@ -19,6 +20,25 @@ class Day6(Table):
                 races[i].append(val)
         
         return [tuple(race) for race in races.values()]
+    
+    def possible_wins(self, time, distance):
+        # This puzzle can be solved with the quadratic formula
+        min_wait = (time - math.sqrt(time**2 - 4 * distance)) / 2
+        max_wait = (time + math.sqrt(time**2 - 4 * distance)) / 2
+
+        # round up the min wait time, if it is an integer, we must wait an extra minisecond to actually win
+        if int(min_wait) == min_wait:
+            min_wait += 1
+        else:
+            min_wait = math.ceil(min_wait)
+
+        # round down the max wait time, if it is an integer, we must wait one milisecond less to actually win
+        if int(max_wait) == max_wait:
+            max_wait -= 1
+        else:
+            max_wait = math.floor(max_wait)
+
+        return max_wait - min_wait + 1
 
 
     def solve(self):
@@ -26,44 +46,17 @@ class Day6(Table):
 
         races = self.parse_races()
         
-        part1 = 1
+        combined_time = ''
+        combined_distance = ''
         for race in races:
-            wins = 0
-            for speed in range(race[0] + 1):
-                time_left = race[0] - speed
-                distance = speed * time_left
-                if distance >= race[1]:
-                    wins += 1
-            part1 = part1 * wins
+            combined_time += str(race[0])
+            combined_distance += str(race[1])
 
+        combined_time = int(combined_time)
+        combined_distance = int(combined_distance)
 
-        _time = ''
-        _distance = ''
-        for race in races:
-            _time += str(race[0])
-            _distance += str(race[1])
-
-        _time = int(_time)
-        _distance = int(_distance)
-
-        min_win = None
-        max_win = None
-        for speed in range(_time + 1):
-            # moving this to a function has a significant performance impact (~1s)
-            time_left = _time - speed
-            distance = speed * time_left
-            if distance >= _distance:
-                min_win = speed
-                break
-
-        for speed in range(_time + 1, 0, -1):
-            time_left = _time - speed
-            distance = speed * time_left
-            if distance >= _distance:
-                max_win = speed
-                break
-
-        part2 = max_win - min_win + 1
+        part1 = math.prod([self.possible_wins(race[0], race[1]) for race in races])
+        part2 = self.possible_wins(combined_time, combined_distance)
 
         end_time = time()
         seconds_elapsed = end_time - start_time
