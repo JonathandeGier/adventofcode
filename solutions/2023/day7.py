@@ -1,7 +1,7 @@
 from Table import Table
 from time import time
 from collections import Counter
-from itertools import product
+from itertools import combinations_with_replacement
 
 CARD_VALUES = {
     '2': 1,
@@ -35,6 +35,14 @@ JOKER_VALUES = {
     'A': 13,
 }
 
+FIVE_OF_A_KIND = 7
+FOUR_OF_A_KIND = 6
+FULL_HOUSE = 5
+THREE_OF_A_KIND = 4
+TWO_PAIR = 3
+ONE_PAIR = 2
+HIGH_CARD = 1
+
 class Day7(Table):
 
     def __init__(self):
@@ -52,38 +60,53 @@ class Day7(Table):
 
         assert len(self.hands) == len(self.input.splitlines()), "Not all hands are unique"
 
+
     def hand_type(self, cards) -> int:
         card_counts = Counter(cards)
-        card_values = card_counts.values()
-        value_counts = Counter(card_values)
+        sorted_values = sorted(card_counts.values())
 
-        if len(card_values) == 1 and value_counts[5] == 1:
-            return 7 # five of a kind
-        elif len(card_values) == 2 and 4 in card_values:
-            return 6 # four of a kind
-        elif len(card_values) == 2 and 3 in card_values and 2 in card_values:
-            return 5 # Full house
-        elif len(card_values) == 3 and 3 in card_values:
-            return 4 # three of a kind
-        elif len(card_values) == 3 and value_counts[2] == 2:
-            return 3 # Two pair
-        elif len(card_values) == 4 and value_counts[2] == 1:
-            return 2 # One Pair
+        if sorted_values == [5]:
+            return FIVE_OF_A_KIND
+        elif sorted_values == [1, 4]:
+            return FOUR_OF_A_KIND
+        elif sorted_values == [2, 3]:
+            return FULL_HOUSE
+        elif sorted_values == [1, 1, 3]:
+            return THREE_OF_A_KIND
+        elif sorted_values == [1, 2, 2]:
+            return TWO_PAIR
+        elif sorted_values == [1, 1, 1, 2]:
+            return ONE_PAIR
+        elif sorted_values == [1, 1, 1, 1, 1]:
+            return HIGH_CARD
         else:
-            return 1 # High card
+            assert False, f'Unknown hand type {sorted_values}'
 
-    def sort_key(self, cards: str) -> tuple:
-        return (self.hand_type(cards), CARD_VALUES[cards[0]], CARD_VALUES[cards[1]], CARD_VALUES[cards[2]], CARD_VALUES[cards[3]], CARD_VALUES[cards[4]])
+    def bitshift_key(self, hand: int, cards, values: dict):
+        # Generates a 24 bit integer to sort the array with
+        # | x.x.x.x | x.x.x.x | x.x.x.x | x.x.x.x | x.x.x.x | x.x.x.x |
+        # |   hand  |  card 1 |  card 2 |  card 3 |  card 4 |  card 5 |
+        key = hand
+        key = (key << 4) + values[cards[0]]
+        key = (key << 4) + values[cards[1]]
+        key = (key << 4) + values[cards[2]]
+        key = (key << 4) + values[cards[3]]
+        key = (key << 4) + values[cards[4]]
+
+        return key
+
+    def sort_key(self, cards: str) -> int:
+        return self.bitshift_key(self.hand_type(cards), cards, CARD_VALUES)
     
-    def joker_key(self, cards: str) -> tuple:
+    def joker_key(self, cards: str) -> int:
         normal_cards = [card for card in cards if card != 'J']
         if len(normal_cards) == 0:
-            hand_type = 7
+            hand_type = FIVE_OF_A_KIND
         else:
-            possible_jokers = product(normal_cards, repeat=len(cards) - len(normal_cards))
+            possible_jokers = combinations_with_replacement(normal_cards, len(cards) - len(normal_cards))
             hand_type = max([self.hand_type(normal_cards + list(joker_cards)) for joker_cards in possible_jokers])
 
-        return (hand_type, JOKER_VALUES[cards[0]], JOKER_VALUES[cards[1]], JOKER_VALUES[cards[2]], JOKER_VALUES[cards[3]], JOKER_VALUES[cards[4]])
+        return self.bitshift_key(hand_type, cards, JOKER_VALUES)
 
 
     def solve(self):
