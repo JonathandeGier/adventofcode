@@ -55,6 +55,14 @@ class Table:
 
         return directory + name
     
+    def bounds(self, data: map):
+        min_x = min([coord[0] for coord in data.keys()])
+        max_x = max([coord[0] for coord in data.keys()])
+        min_y = min([coord[1] for coord in data.keys()])
+        max_y = max([coord[1] for coord in data.keys()])
+
+        return (min_x, max_x, min_y, max_y)
+
     def image_map(self, data: map, colors: map, bounds: tuple = None, scale: int = 1):
         # bounds = None
         # scale = 1
@@ -64,12 +72,7 @@ class Table:
         #     scale = kwargs['scale']
 
         if bounds is None:
-            min_x = min([coord[0] for coord in data.keys()])
-            max_x = max([coord[0] for coord in data.keys()])
-            min_y = min([coord[1] for coord in data.keys()])
-            max_y = max([coord[1] for coord in data.keys()])
-
-            bounds = (min_x, max_x, min_y, max_y)
+            bounds = self.bounds(data)
 
         img = Image.new('RGB', (bounds[1] - bounds[0] + 1, bounds[3] - bounds[2] + 1), "black")
         pixels = img.load()
