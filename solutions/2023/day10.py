@@ -35,10 +35,10 @@ DIRECTIONS = {
 
 # . . . . . . . . . . . . . . .
 # . O O O O O O O O O O O O O .
-# . O F-------------------7 O .
+# . O F--------->---------7 O .
 # . O | I I I I I I I I I | O .
-# . O | I F-----------7 I | O .
-# . O | I | O O O O O | I | O .
+# . O | I F-----<-----7 I | O .
+# . O ^ I | O O O O O | I v O .
 # . O | I | O O O O O | I | O .
 # . O | I L---7 O F---J I | O .
 # . O | I I I | O | I I I | O .
