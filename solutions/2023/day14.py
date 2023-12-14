@@ -1,6 +1,9 @@
 from Table import Table
 from time import time
 
+STONE = 'O'
+EMPTY = '.'
+
 class Day14(Table):
 
     def __init__(self):
@@ -24,7 +27,7 @@ class Day14(Table):
         self.max_y = max([pos[1] for pos in self.map.keys()])
 
     def move_north(self):
-        stones = sorted([pos for pos in self.map if self.map[pos] == 'O'], key=lambda pos: (pos[1], pos[0]))
+        stones = sorted([pos for pos in self.map if self.map[pos] == STONE], key=lambda pos: (pos[1], pos[0]))
         for stone in stones:
             if stone[1] == 0:
                 continue
@@ -37,10 +40,10 @@ class Day14(Table):
                     break
 
             del self.map[stone]
-            self.map[(stone[0], new_y)] = 'O'
+            self.map[(stone[0], new_y)] = STONE
 
     def move_south(self):
-        stones = sorted([pos for pos in self.map if self.map[pos] == 'O'], key=lambda pos: (pos[1], pos[0]), reverse=True)
+        stones = sorted([pos for pos in self.map if self.map[pos] == STONE], key=lambda pos: (pos[1], pos[0]), reverse=True)
         for stone in stones:
             if stone[1] == self.max_y:
                 continue
@@ -53,10 +56,10 @@ class Day14(Table):
                     break
 
             del self.map[stone]
-            self.map[(stone[0], new_y)] = 'O'
+            self.map[(stone[0], new_y)] = STONE
 
     def move_west(self):
-        stones = sorted([pos for pos in self.map if self.map[pos] == 'O'], key=lambda pos: pos)
+        stones = sorted([pos for pos in self.map if self.map[pos] == STONE], key=lambda pos: pos)
         for stone in stones:
             if stone[0] == 0:
                 continue
@@ -69,10 +72,10 @@ class Day14(Table):
                     break
 
             del self.map[stone]
-            self.map[(new_x, stone[1])] = 'O'
+            self.map[(new_x, stone[1])] = STONE
 
     def move_east(self):
-        stones = sorted([pos for pos in self.map if self.map[pos] == 'O'], key=lambda pos: pos, reverse=True)
+        stones = sorted([pos for pos in self.map if self.map[pos] == STONE], key=lambda pos: pos, reverse=True)
         for stone in stones:
             if stone[0] == self.max_x:
                 continue
@@ -85,14 +88,30 @@ class Day14(Table):
                     break
             
             del self.map[stone]
-            self.map[(new_x, stone[1])] = 'O'
+            self.map[(new_x, stone[1])] = STONE
+
+    def round(self):
+        self.move_north()
+        self.move_west()
+        self.move_south()
+        self.move_east()
 
     def cycle(self, rounds: int):
-        for i in range(rounds):
-            self.move_north()
-            self.move_west()
-            self.move_south()
-            self.move_east()
+        seen = {}
+        for i in range(1, rounds):
+            self.round()
+
+            key = frozenset([pos for pos in self.map if self.map[pos] == STONE])
+            if key not in seen:
+                seen[key] = i
+            else:
+                diff = i - seen[key]
+                remain = (rounds - i) % diff
+
+                for _ in range(remain):
+                    self.round()
+
+                break
 
 
     def solve(self):
@@ -100,22 +119,11 @@ class Day14(Table):
 
         self.parse_map()
         self.move_north()
-        part1 = sum([self.max_y - pos[1] + 1 for pos in self.map if self.map[pos] == 'O'])
-
+        part1 = sum([self.max_y - pos[1] + 1 for pos in self.map if self.map[pos] == STONE])
 
         self.parse_map()
-        self.print_map('Start')
-        self.cycle(1)
-        self.print_map('After 1 cycle')
-        self.cycle(1)
-        self.print_map('After 2 cycles')
-        self.cycle(1)
-        self.print_map('After 3 cycles')
-        self.cycle(1)
-        self.print_map('After 4 cycles')
-
-        i = 1_000_000_000
-        part2 = "None"
+        self.cycle(1_000_000_000)
+        part2 = sum([self.max_y - pos[1] + 1 for pos in self.map if self.map[pos] == STONE])
 
         end_time = time()
         seconds_elapsed = end_time - start_time
