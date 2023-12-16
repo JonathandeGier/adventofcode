@@ -64,13 +64,6 @@ class Table:
         return (min_x, max_x, min_y, max_y)
 
     def image_map(self, data: map, colors: map, bounds: tuple = None, scale: int = 1):
-        # bounds = None
-        # scale = 1
-        # if 'bounds' in kwargs:
-        #     bounds = kwargs['bounds']
-        # if 'scale' in kwargs:
-        #     scale = kwargs['scale']
-
         if bounds is None:
             bounds = self.bounds(data)
 
