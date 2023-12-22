@@ -45,15 +45,16 @@ class Table:
         return text
 
     def visual_path(self, name: str):
-        directory = 'solutions/2023/visuals/'
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
-
-        directory += 'day' + str(self.day) + '/'
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
-
-        return directory + name
+        path = f'solutions/2023/visuals/day{self.day}/' + name
+        
+        # make directories if they dont exist
+        folders = path.split('/')
+        for i in range(1, len(folders)):
+            sub_directory = '/'.join(folders[:i]) + '/'
+            if not os.path.isdir(sub_directory):
+                os.mkdir(sub_directory)
+        
+        return path
     
     def bounds(self, data: map, padding: int = 0):
         min_x = min([coord[0] for coord in data.keys()]) - padding
