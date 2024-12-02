@@ -13,7 +13,8 @@ class Day2(Table):
         for line in self.input.splitlines():
             reports.append([int(val) for val in line.split(' ')])
         return reports
-    
+
+
     def is_safe(self, report) -> bool:
         increasing = sorted(report)
         decreasing = sorted(report, reverse=True)
@@ -27,7 +28,8 @@ class Day2(Table):
                 return False
         
         return True
-    
+
+
     def is_safe_tolerant(self, report) -> bool:
         if self.is_safe(report):
             return True
@@ -38,7 +40,6 @@ class Day2(Table):
 
             if self.is_safe(new_report):
                 return True
-            
 
 
     def solve(self):
