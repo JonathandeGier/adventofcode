@@ -78,6 +78,17 @@ class Table:
         img = img.resize((img.size[0] * scale, img.size[1] * scale), Image.Resampling.NEAREST)
         return img
 
+    def grid_map(self, data: list, colors: map, scale: int = 1, background_color: tuple = (0, 0, 0)):
+        img = Image.new('RGB', (len(data[0]), len(data)), background_color)
+        pixels = img.load()
+        for i, row in enumerate(data):
+            for j, val in enumerate(row):
+                if val in colors:
+                    pixels[i, j] = colors[val]
+        
+        img = img.resize((img.size[0] * scale, img.size[1] * scale), Image.Resampling.NEAREST)
+        return img
+
 
     def headers(self):
         return ("Day", "Title", "Part 1", "Part 2", "Time (s)")
