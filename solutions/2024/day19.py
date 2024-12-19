@@ -7,45 +7,49 @@ class Day19(Table):
 
     def __init__(self):
         self.day = 19
-        self.title = ""
+        self.title = "Linen Layout"
         self.input = self.getInput(self.day)
 
-    def possible(self, design: str, patterns: set, depth = 0) -> bool:
+        self.max_pattern_length = 0
+    
+
+    def possible_ways(self, design: str, patterns: set):
         if design in CACHE:
             return CACHE[design]
-
+        
+        options = 0
         if design in patterns:
-            CACHE[design] = True
-            return True
-
-        # print(design, CACHE)
-        possible = False
-        for length in range(1, 11):
+            options += 1
+        
+        for length in range(1, self.max_pattern_length + 1):
             if length >= len(design):
                 continue
 
-            seg = design[:length]
-            rest = design[length:]
-            if seg in patterns and self.possible(rest, patterns, depth + 1):
-                possible = True
-                break
+            if design[:length] in patterns:
+                options += self.possible_ways(design[length:], patterns)
 
-        CACHE[design] = possible
+        CACHE[design] = options
 
-        return possible
+        return options
+    
 
     def solve(self):
         start_time = time()
 
         patterns, designs = self.input.split('\n\n')
         patterns = set([pattern.strip() for pattern in patterns.split(',')])
+        for pattern in patterns:
+            self.max_pattern_length = max(self.max_pattern_length, len(pattern))
 
         part1 = 0
         part2 = 0
         for design in designs.splitlines():
-            print(design)
-            if self.possible(design, patterns):
+            options = self.possible_ways(design, patterns)
+            
+            if options > 0:
                 part1 += 1
+
+            part2 += options
 
 
         end_time = time()
