@@ -1,5 +1,6 @@
 from Table import Table
 from time import time
+import heapq
 
 class Day17(Table):
 
@@ -60,6 +61,17 @@ class Day17(Table):
             ip += 2
 
         return output
+    
+    def correct_digits(self, sequence, program):
+        correct = 0
+        for i in range(len(sequence)):
+            index = -1 - i
+            if sequence[index] == program[index]:
+                correct += 1
+            else:
+                break
+
+        return correct
 
     def solve(self):
         start_time = time()
@@ -74,10 +86,34 @@ class Day17(Table):
 
         output = self.run(registers, program)
 
-        print(output)
+        part1 = ','.join([str(x) for x in output])            
+        part2 = 1
 
-        part1 = "None"
-        part2 = "None"
+        queue = []
+        heapq.heappush(queue, (len(program), 1))
+        while len(queue) > 0:
+            missing_length, value = heapq.heappop(queue)
+
+            found = False
+            for diff in range(-16, 17):
+                new_value = value + diff
+                if new_value < 0:
+                    continue
+
+                new_sequence = self.run({'A': new_value, 'B': 0, 'C': 0}, program)
+                correct_length = self.correct_digits(new_sequence, program)
+                
+                if correct_length == len(program):
+                    part2 = new_value
+                    found = True
+                    assert tuple(program) == tuple(new_sequence)
+                    break
+
+                if len(new_sequence) == correct_length:
+                    heapq.heappush(queue, (len(program) - correct_length, new_value * 8))
+            
+            if found:
+                break
 
         end_time = time()
         seconds_elapsed = end_time - start_time
