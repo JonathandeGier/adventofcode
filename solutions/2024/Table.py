@@ -99,4 +99,4 @@ class Table:
         print(self.format(values), end=end)
 
     def format(self, values):
-        return f"{values[0]:<5} {values[1]:<40} {values[2]:<30} {values[3]:<30} {values[4]:<20}"
+        return f"{values[0]:<5} {values[1]:<40} {values[2]:<30} {values[3]:<40} {values[4]:<20}"
