@@ -1,7 +1,7 @@
 from Table import Table
 from time import time
 
-class Day0(Table):
+class Day1(Table):
 
     def __init__(self):
         self.day = 1
@@ -43,7 +43,7 @@ class Day0(Table):
 
 
 if __name__ == "__main__":
-    day = Day0()
+    day = Day1()
     day.printRow(day.headers())
     day.printRow(day.solve())
     print("")

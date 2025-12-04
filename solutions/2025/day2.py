@@ -1,7 +1,7 @@
 from Table import Table
 from time import time
 
-class Day0(Table):
+class Day2(Table):
 
     def __init__(self):
         self.day = 2
@@ -10,10 +10,6 @@ class Day0(Table):
 
     def is_valid_p1(self, num: int) -> bool:
         num = str(num)
-        # for seq_size in range(1, (len(num) // 2) + 1):
-        #     for i in range(len(num) - seq_size):
-        #         if num[i:i+seq_size] == num[i+seq_size:i+seq_size+seq_size]:
-        #             return False
 
         if len(num) % 2 != 0:
             return True
@@ -68,7 +64,7 @@ class Day0(Table):
 
 
 if __name__ == "__main__":
-    day = Day0()
+    day = Day2()
     day.printRow(day.headers())
     day.printRow(day.solve())
     print("")
